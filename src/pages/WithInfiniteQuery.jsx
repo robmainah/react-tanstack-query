@@ -1,5 +1,7 @@
 import { keepPreviousData, useInfiniteQuery, useQueries, useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { useState } from 'react';
+import { useInView } from 'react-intersection-observer';
 import { Link } from 'react-router-dom';
 
 const getPosts = async (page) => {
@@ -9,19 +11,24 @@ const getPosts = async (page) => {
 }
 
 const WithInfiniteQuery = () => {
+    const {ref, inView} = useInView()
+
     const { isPending, error, data, isFetching, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
         queryKey: ['posts'],
         queryFn: getPosts,
         staleTime: 10000,
         initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) => {
-            console.log(allPages);
             return lastPage.length == 0 ? null : allPages.length + 1
         }
     })
 
     const posts = data ? data.pages.flatMap((page => page)) : []
     // const posts = data ? data.pages.flatMap((page => page)) : []
+
+    useEffect(() => {
+        if (inView) fetchNextPage()
+    }, [inView])
 
     if (isPending) {
         return <h1 className='text-3xl text-center my-8 font-bold text-gray-400'>Loading...</h1>;
@@ -45,7 +52,8 @@ const WithInfiniteQuery = () => {
                     )
                 })}
             </div>
-            {hasNextPage && (<button disabled={isFetchingNextPage} className='px-3 py-1 bg-blue-500 rounded-md text-white font-bold' onClick={() => fetchNextPage()}>load more</button>)}
+            {/* {hasNextPage && <div ref={ref} className='h-4 w-full bg-blue-200'></div>} */}
+            {/* {hasNextPage && (<button disabled={isFetchingNextPage} className='px-3 py-1 bg-blue-500 rounded-md text-white font-bold' onClick={() => fetchNextPage()}>load more</button>)} */}
             {/* <div className='flex items-center justify-center gap-2'>
                 <button className='px-3 py-1 bg-blue-500 rounded-md text-white font-bold' onClick={() => setPage(prev => prev > 1 ? prev - 1 : 1)}>Prev</button>
                 <p className='text-gray-100'>Current page: {page}</p>
