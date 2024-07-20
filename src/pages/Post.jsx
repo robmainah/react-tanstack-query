@@ -7,6 +7,11 @@ const getPosts = async (id) => {
   return response.json();
 }
 
+const getComments = async (id) => {
+  const response = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}/comments`);
+  return response.json();
+}
+
 const Post = () => {
     const {id} = useParams()
 
@@ -14,6 +19,13 @@ const Post = () => {
         queryKey: ['posts', id],
         queryFn: () => getPosts(id),
         staleTime: 10000,
+    })
+
+    const { isPending: commentsPending, error: commentsError, data: commentsData } = useQuery({
+        queryKey: ['comments'],
+        queryFn: () => getComments(id),
+        enabled: !isPending,
+        // staleTime: 10000,
     })
 
     if (isPending) {

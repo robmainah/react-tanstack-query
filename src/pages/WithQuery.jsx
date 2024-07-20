@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 
 const getPosts = async () => {
@@ -6,12 +6,18 @@ const getPosts = async () => {
   return response.json();
 }
 
+const getUsers = async () => {
+  const response = await fetch('https://jsonplaceholder.typicode.com/users');
+  return response.json();
+}
+
 const WithQuery = () => {
-  const { isPending, error, data } = useQuery({
-    queryKey: ['posts'],
-    queryFn: getPosts,
-      staleTime: 10000,
-})
+    const [{ isPending, error, data }, { isPending: userPending, error: userError, data: userData }] = useQueries({
+        queries: [
+            { queryKey: ['posts'], queryFn: getPosts, staleTime: 10000 },
+            { queryKey: ['users'], queryFn: getUsers, staleTime: 10000 },
+        ]
+    })
 
     if (isPending) {
         return <h1 className='text-3xl text-center my-8 font-bold text-gray-400'>Loading...</h1>;
