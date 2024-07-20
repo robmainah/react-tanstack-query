@@ -8,6 +8,7 @@ import WithQuery from './pages/WithQuery.jsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import Post from './pages/Post.jsx'
+import WithInfiniteQuery from './pages/WithInfiniteQuery.jsx'
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
   {
     path: '/withquery/:id',
     element: <Post />
+  },
+  {
+    path: '/withinfinitequery',
+    element: <WithInfiniteQuery />
   },
 ])
 
